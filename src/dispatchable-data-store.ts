@@ -1,10 +1,11 @@
-import { Observable } from 'rxjs/Observable';
+import { SubscribableOrPromise } from 'rxjs/Observable';
 import Action from './action';
+import ThunkAction from './thunk-action';
 import ReadableDataStore from './readable-data-store';
 
 export default interface DispatchableDataStore<TTransformedState, TAction extends Action> extends ReadableDataStore<TTransformedState> {
     dispatch: <TDispatchAction extends TAction>(
-        action: TDispatchAction | Observable<TDispatchAction>,
+        action: DispatchableAction<TDispatchAction, TTransformedState>,
         options?: DispatchOptions
     ) => Promise<TTransformedState>;
 }
@@ -12,3 +13,5 @@ export default interface DispatchableDataStore<TTransformedState, TAction extend
 export interface DispatchOptions {
     queueId?: string;
 }
+
+export type DispatchableAction<TAction = Action, TState = any> = TAction | SubscribableOrPromise<TAction> | ThunkAction<TAction, TState>;

@@ -20,9 +20,9 @@ npm install --save @bigcommerce/data-store
 
 ## Requirements
 
-This library depends on [rxjs](https://github.com/ReactiveX/rxjs). Please refer to [package.json](package.json) for the version requirement.
+This library requires [Promise polyfill](https://github.com/stefanpenner/es6-promise) if you need to support older browsers, such as IE11.
 
-It also requires [Promise polyfill](https://github.com/stefanpenner/es6-promise) if you need to support older browsers, such as IE11.
+You may need to create Observables when using this library (please refer to the usage section). We recommend you to use [rxjs](https://github.com/ReactiveX/rxjs) until the time comes when you can create them natively.
 
 
 ## Usage
