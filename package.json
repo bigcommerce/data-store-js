@@ -35,18 +35,15 @@
     "validate-commits": "validate-commits",
     "validate-dependencies": "yarn install --check-files --frozen-lockfile"
   },
-  "peerDependencies": {
-    "rxjs": "^5.5.5"
-  },
   "dependencies": {
     "@types/lodash": "^4.14.92",
     "lodash": "^4.17.4",
+    "rxjs": "^5.5.5",
     "tslib": "^1.8.0"
   },
   "devDependencies": {
     "@types/jest": "^21.1.10",
     "jest": "^21.2.1",
-    "rxjs": "^5.5.5",
     "standard-version": "^4.2.0",
     "ts-jest": "^21.2.3",
     "tslint": "^5.9.1",

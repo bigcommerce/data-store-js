@@ -1,15 +1,17 @@
 import { isEqual, merge } from 'lodash';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable } from 'rxjs/Observable';
+import { Observable, SubscribableOrPromise } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import Action from './action';
 import deepFreeze from './deep-freeze';
-import DispatchableDataStore, { DispatchOptions } from './dispatchable-data-store';
+import DispatchableDataStore, { DispatchableAction, DispatchOptions } from './dispatchable-data-store';
+import isObservableActionLike from './is-observable-action-like';
 import noopActionTransformer from './noop-action-transformer';
 import noopStateTransformer from './noop-state-transformer';
 import ReadableDataStore, { Filter, Subscriber, Unsubscriber } from './readable-data-store';
 import Reducer from './reducer';
 import ThunkAction from './thunk-action';
+import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/throw';
@@ -65,11 +67,11 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
     }
 
     dispatch<TDispatchAction extends TAction>(
-        action: TDispatchAction | Observable<TDispatchAction> | ThunkAction<TDispatchAction, TTransformedState>,
+        action: DispatchableAction<TDispatchAction, TTransformedState>,
         options?: DispatchOptions
     ): Promise<TTransformedState> {
-        if (action instanceof Observable) {
-            return this._dispatchObservableAction(action, options);
+        if (isObservableActionLike(action)) {
+            return this._dispatchObservableAction(Observable.from(action), options);
         }
 
         if (typeof action === 'function') {
