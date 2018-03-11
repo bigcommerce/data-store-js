@@ -26,7 +26,7 @@ import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/scan';
 
 export default class DataStore<TState, TAction extends Action = Action, TTransformedState = TState> implements ReadableDataStore<TTransformedState>, DispatchableDataStore<TTransformedState, TAction> {
-    private _reducer: Reducer<Partial<TState>, TAction>;
+    private _reducer: Reducer<TState, TAction>;
     private _options: DataStoreOptions<TState, TAction, TTransformedState>;
     private _notification$: Subject<TTransformedState>;
     private _dispatchers: { [key: string]: Dispatcher<TAction> };
@@ -35,7 +35,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
     private _errors: { [key: string]: Subject<Error> };
 
     constructor(
-        reducer: Reducer<Partial<TState>, TAction>,
+        reducer: Reducer<TState, TAction>,
         initialState: Partial<TState> = {},
         options?: Partial<DataStoreOptions<TState, TAction, TTransformedState>>
     ) {
@@ -46,7 +46,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
             actionTransformer: noopActionTransformer,
             ...options,
         };
-        this._state$ = new BehaviorSubject(this._options.stateTransformer(initialState));
+        this._state$ = new BehaviorSubject(this._options.stateTransformer(initialState as TState));
         this._notification$ = new Subject();
         this._dispatchers = {};
         this._dispatchQueue$ = new Subject();
@@ -57,7 +57,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
             .filter((action) => !!action.type)
             .scan(
                 (states, action) => this._transformStates(states, action),
-                { state: initialState, transformedState: this._state$.getValue() }
+                { state: initialState as TState, transformedState: this._state$.getValue() }
             )
             .map(({ transformedState }) => transformedState)
             .distinctUntilChanged(isEqual)
@@ -110,9 +110,9 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
     }
 
     private _transformStates(
-        states: StateTuple<Partial<TState>, TTransformedState>,
+        states: StateTuple<TState, TTransformedState>,
         action: TAction
-    ): StateTuple<Partial<TState>, TTransformedState> {
+    ): StateTuple<TState, TTransformedState> {
         const { state, transformedState } = states;
 
         try {
@@ -207,7 +207,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
 export interface DataStoreOptions<TState, TAction, TTransformedState> {
     shouldWarnMutation: boolean;
     actionTransformer: (action: Observable<TAction>) => Observable<TAction>;
-    stateTransformer: (state: Partial<TState>) => TTransformedState;
+    stateTransformer: (state: TState) => TTransformedState;
 }
 
 interface StateTuple<TState, TTransformedState> {

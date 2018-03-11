@@ -3,7 +3,7 @@ import Action from './action';
 import ThunkAction from './thunk-action';
 import ReadableDataStore from './readable-data-store';
 
-export default interface DispatchableDataStore<TTransformedState, TAction extends Action> extends ReadableDataStore<TTransformedState> {
+export default interface DispatchableDataStore<TTransformedState, TAction extends Action = Action> extends ReadableDataStore<TTransformedState> {
     dispatch: <TDispatchAction extends TAction>(
         action: DispatchableAction<TDispatchAction, TTransformedState>,
         options?: DispatchOptions
