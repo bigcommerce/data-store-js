@@ -1,4 +1,4 @@
-import { assign } from 'lodash';
+import { assign, isEqual } from 'lodash';
 import Action from './action';
 import Reducer from './reducer';
 
@@ -11,7 +11,7 @@ export default function combineReducers<TState, TAction extends Action>(
             const currentState = state ? state[key as keyof TState] : undefined;
             const newState = reducer(currentState, action);
 
-            if (currentState === newState && result) {
+            if (isEqual(currentState, newState) && result) {
                 return result;
             }
 

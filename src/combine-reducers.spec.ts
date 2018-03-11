@@ -19,4 +19,16 @@ describe('combineReducers()', () => {
         expect(fooReducer).toHaveBeenCalledWith(state.foo, action);
         expect(barReducer).toHaveBeenCalledWith(state.bar, action);
     });
+
+    it('returns new instance only if different in value', () => {
+        const state = { foo: { name: 'FOO' }, bar: { name: 'BAR' } };
+        const reducer = combineReducers({
+            foo: (state, action) => action.type === 'UPDATE' ? { name: action.payload } : { ...state },
+            bar: (state) => ({ ...state }),
+        });
+
+        expect(reducer(state, { type: 'NOOP' })).toBe(state);
+        expect(reducer(state, { type: 'UPDATE', payload: 'Hello' })).not.toBe(state);
+        expect(reducer(state, { type: 'UPDATE', payload: 'Hello' }).bar).toBe(state.bar);
+    });
 });

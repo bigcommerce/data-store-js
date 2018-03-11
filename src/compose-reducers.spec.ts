@@ -42,4 +42,15 @@ describe('composeReducers()', () => {
 
         expect(reducer(initialState, { type: 'APPEND' })).toEqual('foobar');
     });
+
+    it('returns new instance only if different in value', () => {
+        const reducer = composeReducers(
+            (state, action) => action.type === 'UPDATE' ? { name: action.payload } : { ...state },
+            (state, action) => action.type === 'UPDATE' ? { name: action.payload } : { ...state }
+        );
+        const initialState = { name: 'FOO' };
+
+        expect(reducer(initialState, { type: 'NOOP' })).toBe(initialState);
+        expect(reducer(initialState, { type: 'UPDATE', payload: 'Hello' })).not.toBe(initialState);
+    });
 });
