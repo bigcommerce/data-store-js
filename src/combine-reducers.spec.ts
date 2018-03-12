@@ -7,7 +7,7 @@ describe('combineReducers()', () => {
         const state = { foo: 'FOO', bar: 'BAR' };
         const action = { type: 'ACTION' };
 
-        const reducer = combineReducers({
+        const reducer = combineReducers<{ foo: string, bar: string }>({
             foo: fooReducer,
             bar: barReducer,
         });

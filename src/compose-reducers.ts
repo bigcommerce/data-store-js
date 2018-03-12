@@ -2,7 +2,7 @@ import { curryRight, flowRight } from 'lodash';
 import Action from './action';
 import Reducer from './reducer';
 
-export default function composeReducers<TState, TAction extends Action>(
+export default function composeReducers<TState, TAction extends Action = Action>(
     ...reducers: Array<Reducer<Partial<TState>, TAction>>
 ): Reducer<TState, TAction> {
     return (state, action) =>
