@@ -24,7 +24,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
     private _dispatchQueue$;
     private _state$;
     private _errors;
-    constructor(reducer: Reducer<Partial<TState>, TAction>, initialState?: Partial<TState>, options?: Partial<DataStoreOptions<TState, TAction, TTransformedState>>);
+    constructor(reducer: Reducer<TState, TAction>, initialState?: Partial<TState>, options?: Partial<DataStoreOptions<TState, TAction, TTransformedState>>);
     dispatch<TDispatchAction extends TAction>(action: DispatchableAction<TDispatchAction, TTransformedState>, options?: DispatchOptions): Promise<TTransformedState>;
     getState(): TTransformedState;
     notifyState(): void;
@@ -39,5 +39,5 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
 export interface DataStoreOptions<TState, TAction, TTransformedState> {
     shouldWarnMutation: boolean;
     actionTransformer: (action: Observable<TAction>) => Observable<TAction>;
-    stateTransformer: (state: Partial<TState>) => TTransformedState;
+    stateTransformer: (state: TState) => TTransformedState;
 }
