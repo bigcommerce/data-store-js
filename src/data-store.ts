@@ -71,7 +71,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         options?: DispatchOptions
     ): Promise<TTransformedState> {
         if (isObservableActionLike(action)) {
-            return this._dispatchObservableAction(Observable.from(action), options);
+            return this._dispatchObservableAction(action, options);
         }
 
         if (typeof action === 'function') {
@@ -140,13 +140,13 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
     }
 
     private _dispatchObservableAction<TDispatchAction extends TAction>(
-        action$: Observable<TDispatchAction>,
+        action$: SubscribableOrPromise<TDispatchAction>,
         options: DispatchOptions = {}
     ): Promise<TTransformedState> {
         return new Promise((resolve, reject) => {
             const error$ = this._getDispatchError(options.queueId);
             const transformedAction$ = this._options.actionTransformer(
-                action$.map((action) =>
+                Observable.from(action$).map((action) =>
                     options.queueId ? merge({}, action, { meta: { queueId: options.queueId } }) : action
                 )
             );
