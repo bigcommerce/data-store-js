@@ -1,7 +1,7 @@
 import { SubscribableOrPromise } from 'rxjs/Observable';
 import Action from './action';
-import ThunkAction from './thunk-action';
 import ReadableDataStore from './readable-data-store';
+import ThunkAction from './thunk-action';
 
 export default interface DispatchableDataStore<TTransformedState, TAction extends Action = Action> extends ReadableDataStore<TTransformedState> {
     dispatch: <TDispatchAction extends TAction>(

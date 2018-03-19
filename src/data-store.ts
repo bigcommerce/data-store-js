@@ -1,16 +1,4 @@
 import { isEqual, merge } from 'lodash';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable, SubscribableOrPromise } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import Action from './action';
-import deepFreeze from './deep-freeze';
-import DispatchableDataStore, { DispatchableAction, DispatchOptions } from './dispatchable-data-store';
-import isObservableActionLike from './is-observable-action-like';
-import noopActionTransformer from './noop-action-transformer';
-import noopStateTransformer from './noop-state-transformer';
-import ReadableDataStore, { Filter, Subscriber, Unsubscriber } from './readable-data-store';
-import Reducer from './reducer';
-import ThunkAction from './thunk-action';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/observable/of';
@@ -24,6 +12,18 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/scan';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable, SubscribableOrPromise } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
+import Action from './action';
+import deepFreeze from './deep-freeze';
+import DispatchableDataStore, { DispatchableAction, DispatchOptions } from './dispatchable-data-store';
+import isObservableActionLike from './is-observable-action-like';
+import noopActionTransformer from './noop-action-transformer';
+import noopStateTransformer from './noop-state-transformer';
+import ReadableDataStore, { Filter, Subscriber, Unsubscriber } from './readable-data-store';
+import Reducer from './reducer';
+import ThunkAction from './thunk-action';
 
 export default class DataStore<TState, TAction extends Action = Action, TTransformedState = TState> implements ReadableDataStore<TTransformedState>, DispatchableDataStore<TTransformedState, TAction> {
     private _reducer: Reducer<TState, TAction>;
