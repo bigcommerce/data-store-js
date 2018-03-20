@@ -1,8 +1,3 @@
-import { Observable } from 'rxjs/Observable';
-import Action from './action';
-import DispatchableDataStore, { DispatchableAction, DispatchOptions } from './dispatchable-data-store';
-import ReadableDataStore, { Filter, Subscriber, Unsubscriber } from './readable-data-store';
-import Reducer from './reducer';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/observable/of';
@@ -16,6 +11,11 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/scan';
+import { Observable } from 'rxjs/Observable';
+import Action from './action';
+import DispatchableDataStore, { DispatchableAction, DispatchOptions } from './dispatchable-data-store';
+import ReadableDataStore, { Filter, Subscriber, Unsubscriber } from './readable-data-store';
+import Reducer from './reducer';
 export default class DataStore<TState, TAction extends Action = Action, TTransformedState = TState> implements ReadableDataStore<TTransformedState>, DispatchableDataStore<TTransformedState, TAction> {
     private _reducer;
     private _options;
