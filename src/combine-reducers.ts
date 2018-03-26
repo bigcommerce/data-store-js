@@ -1,4 +1,5 @@
 import { assign, isEqual } from 'lodash';
+
 import Action from './action';
 import Reducer from './reducer';
 

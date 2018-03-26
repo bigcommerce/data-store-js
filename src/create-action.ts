@@ -1,4 +1,5 @@
 import { omitBy } from 'lodash';
+
 import Action from './action';
 
 export default function createAction<TPayload, TMeta, TType extends string>(
@@ -10,5 +11,5 @@ export default function createAction<TPayload, TMeta, TType extends string>(
         throw new Error('`type` must be a string');
     }
 
-    return { type, ...omitBy({ payload, meta }, value => value === undefined) };
+    return { type, ...omitBy({ payload, meta }, (value) => value === undefined) };
 }

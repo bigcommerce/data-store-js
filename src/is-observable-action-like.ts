@@ -1,4 +1,5 @@
 import { Subscribable, SubscribableOrPromise } from 'rxjs/Observable';
+
 import Action from './action';
 import { DispatchableAction } from './dispatchable-data-store';
 

@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+
 import createAction from './create-action';
 import isObservableActionLike from './is-observable-action-like';
 

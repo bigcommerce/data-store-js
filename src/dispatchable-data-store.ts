@@ -1,4 +1,5 @@
 import { SubscribableOrPromise } from 'rxjs/Observable';
+
 import Action from './action';
 import ReadableDataStore from './readable-data-store';
 import ThunkAction from './thunk-action';

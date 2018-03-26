@@ -15,6 +15,7 @@ import 'rxjs/add/operator/scan';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable, SubscribableOrPromise } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+
 import Action from './action';
 import deepFreeze from './deep-freeze';
 import DispatchableDataStore, { DispatchableAction, DispatchOptions } from './dispatchable-data-store';
@@ -41,9 +42,9 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
     ) {
         this._reducer = reducer;
         this._options = {
+            actionTransformer: noopActionTransformer,
             shouldWarnMutation: true,
             stateTransformer: noopStateTransformer,
-            actionTransformer: noopActionTransformer,
             ...options,
         };
         this._state$ = new BehaviorSubject(this._options.stateTransformer(initialState as TState));
@@ -113,10 +114,8 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         states: StateTuple<TState, TTransformedState>,
         action: TAction
     ): StateTuple<TState, TTransformedState> {
-        const { state, transformedState } = states;
-
         try {
-            const newState = this._reducer(state, action);
+            const newState = this._reducer(states.state, action);
             const transformedState = this._options.shouldWarnMutation === false ?
                 this._options.stateTransformer(newState) :
                 this._options.stateTransformer(deepFreeze(newState));
@@ -125,7 +124,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         } catch (error) {
             this._getDispatchError(action.meta && action.meta.queueId).next(error);
 
-            return { state, transformedState };
+            return { state: states.state, transformedState: states.transformedState };
         }
     }
 

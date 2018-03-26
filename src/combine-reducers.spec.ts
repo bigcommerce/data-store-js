@@ -8,13 +8,13 @@ describe('combineReducers()', () => {
         const action = { type: 'ACTION' };
 
         const reducer = combineReducers<{ foo: string, bar: string }>({
-            foo: fooReducer,
             bar: barReducer,
+            foo: fooReducer,
         });
 
         expect(reducer(state, action)).toEqual({
-            foo: 'foo',
             bar: 'bar',
+            foo: 'foo',
         });
         expect(fooReducer).toHaveBeenCalledWith(state.foo, action);
         expect(barReducer).toHaveBeenCalledWith(state.bar, action);
@@ -23,8 +23,8 @@ describe('combineReducers()', () => {
     it('returns new instance only if different in value', () => {
         const state = { foo: { name: 'FOO' }, bar: { name: 'BAR' } };
         const reducer = combineReducers({
-            foo: (state, action) => action.type === 'UPDATE' ? { name: action.payload } : { ...state },
-            bar: (state) => ({ ...state }),
+            bar: (bar) => ({ ...bar }),
+            foo: (foo, action) => action.type === 'UPDATE' ? { name: action.payload } : { ...foo },
         });
 
         expect(reducer(state, { type: 'NOOP' })).toBe(state);
