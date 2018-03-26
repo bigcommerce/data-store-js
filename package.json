@@ -1,6 +1,6 @@
 {
   "name": "@bigcommerce/data-store",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A JavaScript library for managing application state",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

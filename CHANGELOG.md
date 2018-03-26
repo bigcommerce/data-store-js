@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.3"></a>
+## [0.1.3](https://github.com/bigcommerce/data-store-js/compare/v0.1.2...v0.1.3) (2018-03-26)
+
+
+### Bug Fixes
+
+* **core:** CHECKOUT-3027 Fix thunk actions not getting dispatched in separate queues ([8a0f758](https://github.com/bigcommerce/data-store-js/commit/8a0f758))
+
+
+
 <a name="0.1.2"></a>
 ## [0.1.2](https://github.com/bigcommerce/data-store-js/compare/v0.1.1...v0.1.2) (2018-03-20)
 
