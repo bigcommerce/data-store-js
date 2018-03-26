@@ -147,6 +147,31 @@ describe('DataStore', () => {
             ]);
         });
 
+        it('dispatches thunk actions sequentially by tags', async () => {
+            const reducer = jest.fn(state => state);
+            const store = new DataStore(reducer, { message: 'Hello' });
+
+            reducer.mockClear();
+
+            await Promise.all([
+                store.dispatch((store) => Observable.of({ type: 'ACTION', payload: store.getState().message }).delay(10)),
+                store.dispatch(() => Observable.of({ type: 'ACTION_2' })),
+                store.dispatch(() => Observable.throw({ type: 'ACTION_3', error: true })).catch(() => { }),
+                store.dispatch(() => Observable.of({ type: 'FOOBAR_ACTION' }).delay(5), { queueId: 'foobar' }),
+                store.dispatch(() => Observable.of({ type: 'FOOBAR_ACTION_2' }), { queueId: 'foobar' }),
+                store.dispatch(() => Observable.of({ type: 'ACTION_4' })),
+            ]);
+
+            expect(reducer.mock.calls).toEqual([
+                [expect.anything(), { type: 'FOOBAR_ACTION', meta: { queueId: 'foobar' } }],
+                [expect.anything(), { type: 'FOOBAR_ACTION_2', meta: { queueId: 'foobar' } }],
+                [expect.anything(), { type: 'ACTION', payload: 'Hello' }],
+                [expect.anything(), { type: 'ACTION_2' }],
+                [expect.anything(), { type: 'ACTION_3', error: true }],
+                [expect.anything(), { type: 'ACTION_4' }],
+            ]);
+        });
+
         it('resolves promises sequentially', async () => {
             const store = new DataStore(state => state);
             const callback = jest.fn();

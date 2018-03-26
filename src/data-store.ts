@@ -182,7 +182,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         thunkAction: ThunkAction<TDispatchAction, TTransformedState>,
         options: DispatchOptions = {}
     ): Promise<TTransformedState> {
-        return this._dispatchObservableAction(thunkAction(this));
+        return this._dispatchObservableAction(thunkAction(this), options);
     }
 
     private _getDispatcher(queueId: string = 'default'): Dispatcher<TAction> {
