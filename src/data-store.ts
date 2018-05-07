@@ -13,7 +13,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/scan';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable, SubscribableOrPromise } from 'rxjs/Observable';
+import { Observable, Subscribable, SubscribableOrPromise } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
 import Action from './action';
@@ -94,7 +94,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         subscriber: Subscriber<TTransformedState>,
         ...filters: Array<Filter<TTransformedState>>
     ): Unsubscriber {
-        let state$: Observable<any> = this._state$;
+        let state$: Observable<TTransformedState> = this._state$;
 
         if (filters.length > 0) {
             state$ = state$.distinctUntilChanged((stateA, stateB) =>
@@ -145,13 +145,14 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         return new Promise((resolve, reject) => {
             const error$ = this._getDispatchError(options.queueId);
             const transformedAction$ = this._options.actionTransformer(
-                Observable.from(action$).map((action) =>
-                    options.queueId ? merge({}, action, { meta: { queueId: options.queueId } }) : action
-                )
+                Observable.from(action$)
+                    .map((action) =>
+                        options.queueId ? merge({}, action, { meta: { queueId: options.queueId } }) : action
+                    ) as Subscribable<TDispatchAction>
             );
 
             this._getDispatcher(options.queueId).next(
-                transformedAction$
+                Observable.from(transformedAction$)
                     .map((action, index) => {
                         if (index === 0) {
                             error$.first().subscribe(reject);
@@ -205,7 +206,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
 
 export interface DataStoreOptions<TState, TAction, TTransformedState> {
     shouldWarnMutation: boolean;
-    actionTransformer: (action: Observable<TAction>) => Observable<TAction>;
+    actionTransformer: (action: Subscribable<TAction>) => Subscribable<TAction>;
     stateTransformer: (state: TState) => TTransformedState;
 }
 
@@ -214,4 +215,4 @@ interface StateTuple<TState, TTransformedState> {
     transformedState: TTransformedState;
 }
 
-type Dispatcher<TAction> = Subject<Observable<TAction>>;
+type Dispatcher<TAction> = Subject<Subscribable<TAction>>;
