@@ -11,7 +11,7 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/scan';
-import { Observable } from 'rxjs/Observable';
+import { Subscribable } from 'rxjs/Observable';
 import Action from './action';
 import DispatchableDataStore, { DispatchableAction, DispatchOptions } from './dispatchable-data-store';
 import ReadableDataStore, { Filter, Subscriber, Unsubscriber } from './readable-data-store';
@@ -38,6 +38,6 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
 }
 export interface DataStoreOptions<TState, TAction, TTransformedState> {
     shouldWarnMutation: boolean;
-    actionTransformer: (action: Observable<TAction>) => Observable<TAction>;
-    stateTransformer: (state: TState) => TTransformedState;
+    actionTransformer(action: Subscribable<TAction>): Subscribable<TAction>;
+    stateTransformer(state: TState): TTransformedState;
 }

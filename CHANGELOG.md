@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.4"></a>
+## [0.1.4](https://github.com/bigcommerce/data-store-js/compare/v0.1.3...v0.1.4) (2018-05-07)
+
+
+### Bug Fixes
+
+* **core:** CHECKOUT-3053 Export `Reducer` and `ReducerMap` interfaces ([d33d91c](https://github.com/bigcommerce/data-store-js/commit/d33d91c))
+* **core:** CHECKOUT-3053 Fix type definition for `actionTransformer` option. Use `Subscribable` interface instead. ([53fc40e](https://github.com/bigcommerce/data-store-js/commit/53fc40e))
+
+
+
 <a name="0.1.3"></a>
 ## [0.1.3](https://github.com/bigcommerce/data-store-js/compare/v0.1.2...v0.1.3) (2018-03-26)
 
