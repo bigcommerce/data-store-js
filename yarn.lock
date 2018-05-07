@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@bigcommerce/tslint-config@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@bigcommerce/tslint-config/-/tslint-config-2.0.1.tgz#bf63cdf1e00947cc75aa5da3845c42552645532a"
+
 "@bigcommerce/validate-commits@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@bigcommerce/validate-commits/-/validate-commits-2.0.2.tgz#b94c27ed56d94fe18fcefa677d86458f66fe25af"

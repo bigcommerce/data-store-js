@@ -1,4 +1,3 @@
-import Action from './action';
 
 export default interface ReadableDataStore<TTransformedState> {
     getState(): TTransformedState;

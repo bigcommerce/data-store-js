@@ -11,5 +11,5 @@ export default function createAction<TPayload, TMeta, TType extends string>(
         throw new Error('`type` must be a string');
     }
 
-    return { type, ...omitBy({ payload, meta }, (value) => value === undefined) };
+    return { type, ...omitBy({ payload, meta }, value => value === undefined) };
 }

@@ -32,7 +32,7 @@ describe('DataStore', () => {
         });
 
         it('dispatches error actions and rejects with payload', async () => {
-            const store = new DataStore((state) => state);
+            const store = new DataStore(state => state);
             const action = { type: 'FOOBAR', error: true, payload: 'foobar' };
 
             try {
@@ -43,7 +43,7 @@ describe('DataStore', () => {
         });
 
         it('dispatches thunk actions', async () => {
-            const thunk = (readableStore) => Observable.of({
+            const thunk = readableStore => Observable.of({
                 payload: `${readableStore.getState().message}!!!`,
                 type: 'UPDATE',
             });
@@ -77,7 +77,7 @@ describe('DataStore', () => {
         });
 
         it('dispatches observable actions and rejects with payload', async () => {
-            const store = new DataStore((state) => state, { message: 'foobar' });
+            const store = new DataStore(state => state, { message: 'foobar' });
             const action = { type: 'APPEND_ERROR', payload: new Error('Unknown error') };
 
             try {
@@ -88,11 +88,11 @@ describe('DataStore', () => {
         });
 
         it('dispatches observable actions and rejects with error', async () => {
-            const store = new DataStore((state) => state, { message: 'foobar' });
+            const store = new DataStore(state => state, { message: 'foobar' });
             const error = new Error('Unknown error');
 
             try {
-                await store.dispatch(Observable.create((observer) => {
+                await store.dispatch(Observable.create(observer => {
                     observer.next({ type: 'APPEND', payload: 'foo' });
 
                     throw error;
@@ -103,7 +103,7 @@ describe('DataStore', () => {
         });
 
         it('dispatches observable actions sequentially', async () => {
-            const reducer = jest.fn((state) => state);
+            const reducer = jest.fn(state => state);
             const store = new DataStore(reducer);
 
             reducer.mockClear();
@@ -124,7 +124,7 @@ describe('DataStore', () => {
         });
 
         it('dispatches observable actions sequentially by tags', async () => {
-            const reducer = jest.fn((state) => state);
+            const reducer = jest.fn(state => state);
             const store = new DataStore(reducer);
 
             reducer.mockClear();
@@ -149,13 +149,15 @@ describe('DataStore', () => {
         });
 
         it('dispatches thunk actions sequentially by tags', async () => {
-            const reducer = jest.fn((state) => state);
+            const reducer = jest.fn(state => state);
             const store = new DataStore(reducer, { message: 'Hello' });
 
             reducer.mockClear();
 
             await Promise.all([
-                store.dispatch((readableStore) => Observable.of({ type: 'ACTION', payload: store.getState().message }).delay(10)),
+                store.dispatch(
+                    readableStore => Observable.of({ type: 'ACTION', payload: store.getState().message }).delay(10)
+                ),
                 store.dispatch(() => Observable.of({ type: 'ACTION_2' })),
                 store.dispatch(() => Observable.throw({ type: 'ACTION_3', error: true })).catch(noop),
                 store.dispatch(() => Observable.of({ type: 'FOOBAR_ACTION' }).delay(5), { queueId: 'foobar' }),
@@ -174,16 +176,22 @@ describe('DataStore', () => {
         });
 
         it('resolves promises sequentially', async () => {
-            const store = new DataStore((state) => state);
+            const store = new DataStore(state => state);
             const callback = jest.fn();
 
             await Promise.all([
-                store.dispatch(Observable.of({ type: 'ACTION' }).delay(10)).then(() => callback('ACTION')),
-                store.dispatch(Observable.of({ type: 'ACTION_2' })).then(() => callback('ACTION_2')),
-                store.dispatch(Observable.throw({ type: 'ACTION_3', error: true })).catch(() => callback('ACTION_3')),
-                store.dispatch(Observable.of({ type: 'FOOBAR_ACTION' }).delay(5), { queueId: 'foobar' }).then(() => callback('FOOBAR_ACTION')),
-                store.dispatch(Observable.of({ type: 'FOOBAR_ACTION_2' }), { queueId: 'foobar' }).then(() => callback('FOOBAR_ACTION_2')),
-                store.dispatch(Observable.of({ type: 'ACTION_4' })).then(() => callback('ACTION_4')),
+                store.dispatch(Observable.of({ type: 'ACTION' }).delay(10))
+                    .then(() => callback('ACTION')),
+                store.dispatch(Observable.of({ type: 'ACTION_2' }))
+                    .then(() => callback('ACTION_2')),
+                store.dispatch(Observable.throw({ type: 'ACTION_3', error: true }))
+                    .catch(() => callback('ACTION_3')),
+                store.dispatch(Observable.of({ type: 'FOOBAR_ACTION' }).delay(5), { queueId: 'foobar' })
+                    .then(() => callback('FOOBAR_ACTION')),
+                store.dispatch(Observable.of({ type: 'FOOBAR_ACTION_2' }), { queueId: 'foobar' })
+                    .then(() => callback('FOOBAR_ACTION_2')),
+                store.dispatch(Observable.of({ type: 'ACTION_4' }))
+                    .then(() => callback('ACTION_4')),
             ]);
 
             expect(callback.mock.calls).toEqual([
@@ -197,7 +205,7 @@ describe('DataStore', () => {
         });
 
         it('ignores actions that do not have `type` property', () => {
-            const reducer = jest.fn((state) => state);
+            const reducer = jest.fn(state => state);
             const store = new DataStore(reducer);
 
             reducer.mockClear();
@@ -208,7 +216,7 @@ describe('DataStore', () => {
         });
 
         it('ignores observable actions that do not emit actions with `type` property', () => {
-            const reducer = jest.fn((state) => state);
+            const reducer = jest.fn(state => state);
             const store = new DataStore(reducer);
 
             reducer.mockClear();
@@ -218,10 +226,10 @@ describe('DataStore', () => {
         });
 
         it('dispatches actions with transformer applied', () => {
-            const actionTransformer = jest.fn((action$) =>
-                action$.map((action) => ({ ...action, payload: 'foo' }))
+            const actionTransformer = jest.fn(action$ =>
+                action$.map(action => ({ ...action, payload: 'foo' }))
             );
-            const reducer = jest.fn((state) => state);
+            const reducer = jest.fn(state => state);
             const store = new DataStore(reducer, {}, { actionTransformer });
 
             store.dispatch({ type: 'ACTION' });
@@ -231,19 +239,20 @@ describe('DataStore', () => {
         });
 
         it('dispatches failed actions with transformer applied', async () => {
-            const actionTransformer = jest.fn((action$) =>
-                action$.catch((action) => {
+            const actionTransformer = jest.fn(action$ =>
+                action$.catch(action => {
                     throw { ...action, payload: 'foo' };
                 })
             );
-            const reducer = jest.fn((state) => state);
+            const reducer = jest.fn(state => state);
             const store = new DataStore(reducer, {}, { actionTransformer });
 
             try {
                 await store.dispatch({ type: 'ACTION', error: true });
             } catch (error) {
                 expect(actionTransformer).toHaveBeenCalled();
-                expect(reducer).toHaveBeenCalledWith(expect.anything(), { type: 'ACTION', error: true, payload: 'foo' });
+                expect(reducer)
+                    .toHaveBeenCalledWith(expect.anything(), { type: 'ACTION', error: true, payload: 'foo' });
                 expect(error).toEqual('foo');
             }
         });
@@ -252,7 +261,7 @@ describe('DataStore', () => {
     describe('#subscribe()', () => {
         it('notifies subscribers when dispatching actions', () => {
             const initialState = { foobar: 'foobar' };
-            const store = new DataStore((state) => state, initialState);
+            const store = new DataStore(state => state, initialState);
             const subscriber = jest.fn();
 
             store.subscribe(subscriber);
@@ -278,8 +287,7 @@ describe('DataStore', () => {
         });
 
         it('does not notify subscribers if current state has changed in reference but not value', () => {
-            const store = new DataStore(
-                (state) => ({ ...state }),
+            const store = new DataStore(state => ({ ...state }),
                 { foobar: 'foobar' }
             );
 
@@ -297,7 +305,7 @@ describe('DataStore', () => {
                 (state, action) => action.type === 'CAPITALIZE' ? { foobar: 'FOOBAR' } : state,
                 initialState,
                 {
-                    stateTransformer: (state) => ({ ...state, transformed: true }),
+                    stateTransformer: state => ({ ...state, transformed: true }),
                 }
             );
             const subscriber = jest.fn();
@@ -312,7 +320,7 @@ describe('DataStore', () => {
         });
 
         it('notifies all subscribers with the initial state', () => {
-            const store = new DataStore((state) => state);
+            const store = new DataStore(state => state);
             const subscriber = jest.fn();
 
             store.subscribe(subscriber);
@@ -338,7 +346,7 @@ describe('DataStore', () => {
             }, { foo: '', bar: '' });
             const subscriber = jest.fn();
 
-            store.subscribe(subscriber, (state) => state.foo);
+            store.subscribe(subscriber, state => state.foo);
             subscriber.mockReset();
 
             store.dispatch({ type: 'FOO' });
@@ -372,9 +380,7 @@ describe('DataStore', () => {
             const subscriber = jest.fn();
 
             store.subscribe(
-                subscriber,
-                (state) => state.foo,
-                (state) => state.bar
+                subscriber, state => state.foo, state => state.bar
             );
             subscriber.mockReset();
 
@@ -401,8 +407,12 @@ describe('DataStore', () => {
             store.subscribe(subscriber);
 
             await Promise.all([
-                store.dispatch(Observable.from([{ type: 'APPEND', payload: 'foo' }, { type: 'APPEND', payload: 'bar' }]).delay(10)),
-                store.dispatch(Observable.from([{ type: 'APPEND', payload: '!!!' }]).delay(1)),
+                store.dispatch(
+                    Observable.from([{ type: 'APPEND', payload: 'foo' }, { type: 'APPEND', payload: 'bar' }]).delay(10)
+                ),
+                store.dispatch(
+                    Observable.from([{ type: 'APPEND', payload: '!!!' }]).delay(1)
+                ),
             ]);
 
             expect(subscriber.mock.calls).toEqual([
@@ -426,10 +436,18 @@ describe('DataStore', () => {
             store.subscribe(subscriber);
 
             await Promise.all([
-                store.dispatch(Observable.from([{ type: 'APPEND', payload: 'foo' }, { type: 'APPEND', payload: 'bar' }]).delay(10)),
-                store.dispatch(Observable.from([{ type: 'APPEND', payload: '!!!' }]).delay(5)),
-                store.dispatch(Observable.from([{ type: 'APPEND', payload: 'Hey' }]).delay(1), { queueId: 'greeting' }),
-                store.dispatch(Observable.from([{ type: 'APPEND', payload: ', ' }]), { queueId: 'greeting' }),
+                store.dispatch(
+                    Observable.from([{ type: 'APPEND', payload: 'foo' }, { type: 'APPEND', payload: 'bar' }]).delay(10)
+                ),
+                store.dispatch(
+                    Observable.from([{ type: 'APPEND', payload: '!!!' }]).delay(5)
+                ),
+                store.dispatch(
+                    Observable.from([{ type: 'APPEND', payload: 'Hey' }]).delay(1), { queueId: 'greeting' }
+                ),
+                store.dispatch(
+                    Observable.from([{ type: 'APPEND', payload: ', ' }]), { queueId: 'greeting' }
+                ),
             ]);
 
             expect(subscriber.mock.calls).toEqual([
@@ -444,17 +462,17 @@ describe('DataStore', () => {
 
         it('calls the reducer with the initial action', async () => {
             const initialState = { foobar: 'foobar' };
-            const reducer = jest.fn((state) => state);
+            const reducer = jest.fn(state => state);
             const store = new DataStore(reducer, initialState);
 
-            await new Promise((resolve) => store.subscribe(resolve));
+            await new Promise(resolve => store.subscribe(resolve));
 
             expect(reducer).toHaveBeenCalledWith(initialState, { type: 'INIT' });
         });
 
         it('returns an unsubscribe function', () => {
             const initialState = { foobar: 'foobar' };
-            const store = new DataStore((state) => state, initialState);
+            const store = new DataStore(state => state, initialState);
             const subscriber = jest.fn();
             const unsubscribe = store.subscribe(subscriber);
 
@@ -484,7 +502,7 @@ describe('DataStore', () => {
             expect.assertions(3);
 
             await store.dispatch(Observable.of({ type: 'DECREMENT' }))
-                .catch((error) => expect(error).toBeInstanceOf(Error));
+                .catch(error => expect(error).toBeInstanceOf(Error));
 
             await store.dispatch(Observable.of({ type: 'INCREMENT' }));
 
@@ -508,7 +526,7 @@ describe('DataStore', () => {
                 },
                 { count: 1 },
                 {
-                    stateTransformer: (state) => {
+                    stateTransformer: state => {
                         if (state.count === 2) {
                             throw new Error('Transformation error');
                         }
@@ -522,7 +540,7 @@ describe('DataStore', () => {
             expect.assertions(3);
 
             await store.dispatch(Observable.of({ type: 'INCREMENT' }))
-                .catch((error) => expect(error).toBeInstanceOf(Error));
+                .catch(error => expect(error).toBeInstanceOf(Error));
 
             await store.dispatch(Observable.of({ type: 'DECREMENT' }));
 
@@ -533,7 +551,7 @@ describe('DataStore', () => {
 
     describe('#notifyState()', () => {
         it('notifies subscribers of its current state', () => {
-            const store = new DataStore((state) => state, { foobar: 'foobar' });
+            const store = new DataStore(state => state, { foobar: 'foobar' });
             const subscriber = jest.fn();
 
             store.subscribe(subscriber);
@@ -544,10 +562,10 @@ describe('DataStore', () => {
         });
 
         it('notifies subscribers with filters of its current state', () => {
-            const store = new DataStore((state) => state, { foobar: 'foobar' });
+            const store = new DataStore(state => state, { foobar: 'foobar' });
             const subscriber = jest.fn();
 
-            store.subscribe(subscriber, (state) => state.foobar);
+            store.subscribe(subscriber, state => state.foobar);
             store.notifyState();
 
             expect(subscriber).toHaveBeenLastCalledWith({ foobar: 'foobar' });
@@ -574,8 +592,7 @@ describe('DataStore', () => {
         });
 
         it('does not return different reference if values are equal after reduction', () => {
-            const store = new DataStore(
-                (state) => ({ ...state }),
+            const store = new DataStore(state => ({ ...state }),
                 { foobar: 'foobar' }
             );
 
@@ -591,7 +608,7 @@ describe('DataStore', () => {
                 (state, action) => action.type === 'INCREMENT' ? { foobar: 'foobar x2' } : state,
                 { foobar: 'foobar' },
                 {
-                    stateTransformer: (state) => ({ ...state, transformed: true }),
+                    stateTransformer: state => ({ ...state, transformed: true }),
                 }
             );
 
@@ -609,14 +626,14 @@ describe('DataStore', () => {
         });
 
         it('warns if mutating returned state', () => {
-            const store = new DataStore((state) => state, { name: 'Foo' });
+            const store = new DataStore(state => state, { name: 'Foo' });
             const currentState = store.getState();
 
             expect(() => { currentState.name = 'Bar'; }).toThrow();
         });
 
         it('does not warn if mutating state returned from mutable store', () => {
-            const store = new DataStore((state) => state, { name: 'Foo' }, { shouldWarnMutation: false });
+            const store = new DataStore(state => state, { name: 'Foo' }, { shouldWarnMutation: false });
             const currentState = store.getState();
 
             expect(() => { currentState.name = 'Bar'; }).not.toThrow();

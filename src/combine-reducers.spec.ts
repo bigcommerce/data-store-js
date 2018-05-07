@@ -16,6 +16,7 @@ describe('combineReducers()', () => {
             bar: 'bar',
             foo: 'foo',
         });
+
         expect(fooReducer).toHaveBeenCalledWith(state.foo, action);
         expect(barReducer).toHaveBeenCalledWith(state.bar, action);
     });
@@ -23,7 +24,7 @@ describe('combineReducers()', () => {
     it('returns new instance only if different in value', () => {
         const state = { foo: { name: 'FOO' }, bar: { name: 'BAR' } };
         const reducer = combineReducers({
-            bar: (bar) => ({ ...bar }),
+            bar: bar => ({ ...bar }),
             foo: (foo, action) => action.type === 'UPDATE' ? { name: action.payload } : { ...foo },
         });
 

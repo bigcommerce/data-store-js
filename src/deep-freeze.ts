@@ -9,7 +9,7 @@ export default function deepFreeze<T>(object: T[] | T): ReadonlyArray<T> | Reado
     }
 
     if (Array.isArray(object)) {
-        return Object.freeze(object.map((value) => deepFreeze(value)));
+        return Object.freeze(object.map(value => deepFreeze(value)));
     }
 
     return Object.freeze(Object.getOwnPropertyNames(object).reduce((result, key) => {

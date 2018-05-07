@@ -24,7 +24,7 @@
     "build": "yarn compile",
     "precompile": "rm -rf lib",
     "compile": "tsc --outDir lib",
-    "lint": "tslint src/**/*.ts --config tslint.json && tsc --noEmit",
+    "lint": "tslint 'src/**/*.ts' --config tslint.json --project tsconfig.json && tsc --noEmit",
     "prerelease": "git fetch --tags && yarn validate-dependencies && yarn validate-commits && yarn build",
     "release": "git add lib && standard-version -a",
     "test": "jest --config jest-config.js",
@@ -42,6 +42,7 @@
     "tslib": "^1.8.0"
   },
   "devDependencies": {
+    "@bigcommerce/tslint-config": "^2.0.1",
     "@bigcommerce/validate-commits": "^2.0.2",
     "@types/jest": "^21.1.10",
     "jest": "^21.2.1",

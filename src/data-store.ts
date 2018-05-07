@@ -26,7 +26,8 @@ import ReadableDataStore, { Filter, Subscriber, Unsubscriber } from './readable-
 import Reducer from './reducer';
 import ThunkAction from './thunk-action';
 
-export default class DataStore<TState, TAction extends Action = Action, TTransformedState = TState> implements ReadableDataStore<TTransformedState>, DispatchableDataStore<TTransformedState, TAction> {
+export default class DataStore<TState, TAction extends Action = Action, TTransformedState = TState> implements
+    ReadableDataStore<TTransformedState>, DispatchableDataStore<TTransformedState, TAction> {
     private _reducer: Reducer<TState, TAction>;
     private _options: DataStoreOptions<TState, TAction, TTransformedState>;
     private _notification$: Subject<TTransformedState>;
@@ -54,8 +55,8 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         this._errors = {};
 
         this._dispatchQueue$
-            .mergeMap((dispatcher$) => dispatcher$.concatMap((action$) => action$))
-            .filter((action) => !!action.type)
+            .mergeMap(dispatcher$ => dispatcher$.concatMap(action$ => action$))
+            .filter(action => !!action.type)
             .scan(
                 (states, action) => this._transformStates(states, action),
                 { state: initialState as TState, transformedState: this._state$.getValue() }
@@ -98,7 +99,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
 
         if (filters.length > 0) {
             state$ = state$.distinctUntilChanged((stateA, stateB) =>
-                filters.every((filter) => isEqual(filter(stateA), filter(stateB)))
+                filters.every(filter => isEqual(filter(stateA), filter(stateB)))
             );
         }
 
@@ -107,7 +108,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
             this._notification$.subscribe(subscriber),
         ];
 
-        return () => subscriptions.forEach((subscription) => subscription.unsubscribe());
+        return () => subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     private _transformStates(
@@ -146,7 +147,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
             const error$ = this._getDispatchError(options.queueId);
             const transformedAction$ = this._options.actionTransformer(
                 Observable.from(action$)
-                    .map((action) =>
+                    .map(action =>
                         options.queueId ? merge({}, action, { meta: { queueId: options.queueId } }) : action
                     ) as Subscribable<TDispatchAction>
             );
@@ -164,7 +165,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
 
                         return action;
                     })
-                    .catch((action) => {
+                    .catch(action => {
                         reject(action instanceof Error ? action : action.payload);
 
                         return Observable.of(action);
@@ -206,8 +207,8 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
 
 export interface DataStoreOptions<TState, TAction, TTransformedState> {
     shouldWarnMutation: boolean;
-    actionTransformer: (action: Subscribable<TAction>) => Subscribable<TAction>;
-    stateTransformer: (state: TState) => TTransformedState;
+    actionTransformer(action: Subscribable<TAction>): Subscribable<TAction>;
+    stateTransformer(state: TState): TTransformedState;
 }
 
 interface StateTuple<TState, TTransformedState> {
