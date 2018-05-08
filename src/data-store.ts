@@ -1,17 +1,7 @@
 import { isEqual, merge } from 'lodash';
-import 'rxjs/add/observable/from';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/concatMap';
-import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/first';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/scan';
+import { from } from 'rxjs/observable/from';
+import { of } from 'rxjs/observable/of';
+import { catchError, concatMap, distinctUntilChanged, filter, first, map, mergeMap, scan, tap } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable, Subscribable, SubscribableOrPromise } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -55,14 +45,20 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         this._errors = {};
 
         this._dispatchQueue$
-            .mergeMap(dispatcher$ => dispatcher$.concatMap(action$ => action$))
-            .filter(action => !!action.type)
-            .scan(
-                (states, action) => this._transformStates(states, action),
-                { state: initialState as TState, transformedState: this._state$.getValue() }
+            .pipe(
+                mergeMap(dispatcher$ => dispatcher$.pipe(concatMap(action$ => action$))),
+                filter(action => !!action.type),
+                scan(
+                    (states: StateTuple<TState, TTransformedState>, action: TAction) =>
+                        this._transformStates(states, action),
+                    {
+                        state: initialState as TState,
+                        transformedState: this._state$.getValue(),
+                    }
+                ),
+                map(({ transformedState }) => transformedState),
+                distinctUntilChanged(isEqual)
             )
-            .map(({ transformedState }) => transformedState)
-            .distinctUntilChanged(isEqual)
             .subscribe(this._state$);
 
         this.dispatch({ type: 'INIT' } as TAction);
@@ -98,8 +94,10 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         let state$: Observable<TTransformedState> = this._state$;
 
         if (filters.length > 0) {
-            state$ = state$.distinctUntilChanged((stateA, stateB) =>
-                filters.every(filter => isEqual(filter(stateA), filter(stateB)))
+            state$ = state$.pipe(
+                distinctUntilChanged((stateA, stateB) =>
+                    filters.every(filterFn => isEqual(filterFn(stateA), filterFn(stateB)))
+                )
             );
         }
 
@@ -135,7 +133,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         return this._dispatchObservableAction(
             action.error ?
                 Observable.throw(action) :
-                Observable.of(action)
+                of(action)
         );
     }
 
@@ -146,35 +144,40 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         return new Promise((resolve, reject) => {
             const error$ = this._getDispatchError(options.queueId);
             const transformedAction$ = this._options.actionTransformer(
-                Observable.from(action$)
-                    .map(action =>
-                        options.queueId ? merge({}, action, { meta: { queueId: options.queueId } }) : action
-                    ) as Subscribable<TDispatchAction>
+                from(action$).pipe(
+                    map(action =>
+                        options.queueId ?
+                            merge({}, action, { meta: { queueId: options.queueId } }) :
+                            action
+                    )
+                ) as Subscribable<TDispatchAction>
             );
 
             this._getDispatcher(options.queueId).next(
-                Observable.from(transformedAction$)
-                    .map((action, index) => {
-                        if (index === 0) {
-                            error$.first().subscribe(reject);
-                        }
+                from(transformedAction$)
+                    .pipe(
+                        map((action, index) => {
+                            if (index === 0) {
+                                error$.pipe(first()).subscribe(reject);
+                            }
 
-                        if (action.error) {
-                            reject(action.payload);
-                        }
+                            if (action.error) {
+                                reject(action.payload);
+                            }
 
-                        return action;
-                    })
-                    .catch(action => {
-                        reject(action instanceof Error ? action : action.payload);
+                            return action;
+                        }),
+                        catchError(action => {
+                            reject(action instanceof Error ? action : action.payload);
 
-                        return Observable.of(action);
-                    })
-                    .do({
-                        complete: () => {
-                            resolve(this.getState());
-                        },
-                    })
+                            return of(action);
+                        }),
+                        tap({
+                            complete: () => {
+                                resolve(this.getState());
+                            },
+                        })
+                    )
             );
         });
     }
