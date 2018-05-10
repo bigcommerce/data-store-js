@@ -165,7 +165,6 @@ To see other available commands:
 yarn run
 ```
 
-
 ## License
 
-MIT (Pending)
+MIT
