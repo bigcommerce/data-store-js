@@ -1,16 +1,3 @@
-import 'rxjs/add/observable/from';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/concatMap';
-import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/first';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/scan';
 import { Subscribable } from 'rxjs/Observable';
 import Action from './action';
 import DispatchableDataStore, { DispatchableAction, DispatchOptions } from './dispatchable-data-store';
