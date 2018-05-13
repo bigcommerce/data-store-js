@@ -1,4 +1,4 @@
-export default interface Action<TPayload = any, TMeta = any, TType extends string = string> {
+export default interface Action<TPayload = any, TMeta = any, TType = any> {
     type: TType;
     error?: boolean;
     meta?: TMeta;
