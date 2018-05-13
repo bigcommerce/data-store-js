@@ -23,7 +23,7 @@
     "prebuild": "yarn lint && yarn test",
     "build": "yarn compile",
     "precompile": "rm -rf lib",
-    "compile": "tsc --outDir lib",
+    "compile": "tsc --outDir lib --project tsconfig-build.json",
     "lint": "tslint 'src/**/*.ts' --config tslint.json --project tsconfig.json && tsc --noEmit",
     "prerelease": "git fetch --tags && yarn validate-dependencies && yarn validate-commits && yarn build",
     "release": "git add lib && standard-version -a",

@@ -4,7 +4,7 @@ import Action from './action';
 import Reducer from './reducer';
 
 export default function composeReducers<TState, TAction extends Action = Action>(
-    ...reducers: Array<Reducer<Partial<TState>, TAction>>
+    ...reducers: Array<Reducer<TState, TAction>>
 ): Reducer<TState, TAction> {
     return (state, action) => {
         const newState = flowRight.apply(

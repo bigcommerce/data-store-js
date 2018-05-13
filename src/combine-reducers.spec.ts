@@ -1,3 +1,4 @@
+import Action from './action';
 import combineReducers from './combine-reducers';
 
 describe('combineReducers()', () => {
@@ -24,8 +25,9 @@ describe('combineReducers()', () => {
     it('returns new instance only if different in value', () => {
         const state = { foo: { name: 'FOO' }, bar: { name: 'BAR' } };
         const reducer = combineReducers({
-            bar: bar => ({ ...bar }),
-            foo: (foo, action) => action.type === 'UPDATE' ? { name: action.payload } : { ...foo },
+            bar: (bar = state.bar) => ({ ...bar }),
+            foo: (foo = state.foo, action: Action) =>
+                action.type === 'UPDATE' ? { name: action.payload } : { ...foo },
         });
 
         expect(reducer(state, { type: 'NOOP' })).toBe(state);
