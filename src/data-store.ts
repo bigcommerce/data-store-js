@@ -1,6 +1,7 @@
 import { isEqual, merge } from 'lodash';
 import { from } from 'rxjs/observable/from';
 import { of } from 'rxjs/observable/of';
+import { _throw } from 'rxjs/observable/throw';
 import { catchError, concatMap, distinctUntilChanged, filter, first, map, mergeMap, scan, tap } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable, Subscribable, SubscribableOrPromise } from 'rxjs/Observable';
@@ -131,9 +132,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         action: TDispatchAction
     ): Promise<TTransformedState> {
         return this._dispatchObservableAction(
-            action.error ?
-                Observable.throw(action) :
-                of(action)
+            action.error ? _throw(action) : of(action)
         );
     }
 
