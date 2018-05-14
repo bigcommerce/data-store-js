@@ -153,22 +153,16 @@ console.log(store.dispatch(createAction('INCREMENT'))); // { type: 'INCREMENT', 
 
 ## Contribution
 
-To prepare a release:
+To release:
 
 ```sh
-yarn release
-```
-
-To publish a release:
-
-```sh
-npm publish --access public && git push --follow-tags
+npm run release
 ```
 
 To see other available commands:
 
 ```sh
-yarn run
+npm run
 ```
 
 ## License
