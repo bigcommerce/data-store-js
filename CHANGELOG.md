@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.6"></a>
+## [0.1.6](https://github.com/bigcommerce/data-store-js/compare/v0.1.5...v0.1.6) (2018-05-14)
+
+
+### Bug Fixes
+
+* **core:** CHECKOUT-3053 Fix issue related to error action not able to dispatch ([443c300](https://github.com/bigcommerce/data-store-js/commit/443c300))
+* **core:** CHECKOUT-3053 More permissive default action type ([7b8e2ad](https://github.com/bigcommerce/data-store-js/commit/7b8e2ad))
+
+
+
 <a name="0.1.5"></a>
 ## [0.1.5](https://github.com/bigcommerce/data-store-js/compare/v0.1.4...v0.1.5) (2018-05-10)
 
