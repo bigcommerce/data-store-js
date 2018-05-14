@@ -156,13 +156,13 @@ console.log(store.dispatch(createAction('INCREMENT'))); // { type: 'INCREMENT', 
 To release:
 
 ```sh
-yarn release
+npm run release
 ```
 
 To see other available commands:
 
 ```sh
-yarn run
+npm run
 ```
 
 ## License

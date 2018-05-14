@@ -17,7 +17,6 @@ module.exports = {
     ],
     coveragePathIgnorePatterns: [
         '\\.mock\\.(js|ts)$',
-        '\\.typedef\\.(js|ts)$',
         '\\.d\\.ts$',
     ],
 };
