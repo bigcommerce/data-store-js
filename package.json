@@ -31,7 +31,6 @@
     "test:coverage": "npm test -- --coverage",
     "test:series": "npm test -- --runInBand",
     "test:watch": "npm test -- --watch",
-    "travis": "npm run lint && npm run test:series --coverage",
     "validate-commits": "validate-commits"
   },
   "dependencies": {
