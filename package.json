@@ -2,6 +2,7 @@
   "name": "@bigcommerce/data-store",
   "version": "0.1.6",
   "description": "A JavaScript library for managing application state",
+  "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
