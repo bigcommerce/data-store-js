@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.8"></a>
+## [0.1.8](https://github.com/bigcommerce/data-store-js/compare/v0.1.7...v0.1.8) (2018-05-27)
+
+
+### Bug Fixes
+
+* **common:** CHECKOUT-3191 Fix sourcemaps by enabling `inlineSources` ([3b85d78](https://github.com/bigcommerce/data-store-js/commit/3b85d78))
+
+
+
 <a name="0.1.7"></a>
 ## [0.1.7](https://github.com/bigcommerce/data-store-js/compare/v0.1.6...v0.1.7) (2018-05-14)
 
