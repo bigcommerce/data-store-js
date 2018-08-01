@@ -323,6 +323,25 @@ describe('DataStore', () => {
             });
         });
 
+        it('does not notify subscribers if only transformed state changes', () => {
+            const initialState = { foobar: 'foobar' };
+            const store = new DataStore(
+                (state = { foobar: '' }, action) => state,
+                initialState,
+                {
+                    stateTransformer: state => ({ ...state, transformed: Math.random() }),
+                }
+            );
+            const subscriber = jest.fn();
+
+            store.subscribe(subscriber);
+            subscriber.mockReset();
+
+            store.dispatch({ type: 'ACTION' });
+
+            expect(subscriber).not.toHaveBeenCalled();
+        });
+
         it('notifies all subscribers with the initial state', () => {
             const store = new DataStore((state = {}) => state);
             const subscriber = jest.fn();

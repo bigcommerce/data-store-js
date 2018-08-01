@@ -68,8 +68,8 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
                         transformedState: this._state$.getValue(),
                     }
                 ),
-                map(({ transformedState }) => transformedState),
-                distinctUntilChanged(isEqual)
+                distinctUntilChanged(({ state: stateA }, { state: stateB }) => isEqual(stateA, stateB)),
+                map(({ transformedState }) => transformedState)
             )
             .subscribe(this._state$);
 
