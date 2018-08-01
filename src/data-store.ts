@@ -2,7 +2,18 @@ import { isEqual, merge } from 'lodash';
 import { from } from 'rxjs/observable/from';
 import { of } from 'rxjs/observable/of';
 import { _throw } from 'rxjs/observable/throw';
-import { catchError, concatMap, distinctUntilChanged, filter, first, map, mergeMap, scan, tap } from 'rxjs/operators';
+import {
+    catchError,
+    concatMap,
+    distinctUntilChanged,
+    filter,
+    first,
+    map,
+    mergeMap,
+    scan,
+    skip,
+    tap,
+} from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable, Subscribable, SubscribableOrPromise } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -13,7 +24,7 @@ import DispatchableDataStore, { DispatchableAction, DispatchOptions } from './di
 import isObservableActionLike from './is-observable-action-like';
 import noopActionTransformer from './noop-action-transformer';
 import noopStateTransformer from './noop-state-transformer';
-import ReadableDataStore, { Filter, Subscriber, Unsubscriber } from './readable-data-store';
+import ReadableDataStore, { Filter, Subscriber, SubscribeOptions, Unsubscriber } from './readable-data-store';
 import Reducer from './reducer';
 import ThunkAction from './thunk-action';
 
@@ -88,10 +99,12 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         this._notification$.next(this.getState());
     }
 
-    subscribe(
-        subscriber: Subscriber<TTransformedState>,
-        ...filters: Array<Filter<TTransformedState>>
-    ): Unsubscriber {
+    subscribe(subscriber: Subscriber<TTransformedState>, ...filters: Array<Filter<TTransformedState>>): Unsubscriber;
+    subscribe(subscriber: Subscriber<TTransformedState>, options: SubscribeOptions<TTransformedState>): Unsubscriber;
+    subscribe(subscriber: Subscriber<TTransformedState>, ...args: any[]): Unsubscriber {
+        const options: SubscribeOptions<TTransformedState> = typeof args[0] === 'object' ? args[0] : undefined;
+        const filters: Array<Filter<TTransformedState>> = options ? (options.filters || []) : args;
+
         let state$: Observable<TTransformedState> = this._state$;
 
         if (filters.length > 0) {
@@ -100,6 +113,10 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
                     filters.every(filterFn => isEqual(filterFn(stateA), filterFn(stateB)))
                 )
             );
+        }
+
+        if (options && options.initial === false) {
+            state$ = state$.pipe(skip(1));
         }
 
         const subscriptions = [

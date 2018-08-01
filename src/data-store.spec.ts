@@ -332,6 +332,20 @@ describe('DataStore', () => {
             expect(subscriber).toHaveBeenCalledWith(store.getState());
         });
 
+        it('skips the initial notification', () => {
+            const initialState = { foobar: 'foobar' };
+            const store = new DataStore(
+                (state = { foobar: '' }, action) => action.type === 'CAPITALIZE' ? { foobar: 'FOOBAR' } : state,
+                initialState
+            );
+            const subscriber = jest.fn();
+
+            store.subscribe(subscriber, { initial: false });
+            store.dispatch({ type: 'CAPITALIZE' });
+
+            expect(subscriber).toHaveBeenCalledTimes(1);
+        });
+
         it('only notifies subscribers when `filter` condition is met', () => {
             const store = new DataStore((state = { foo: '', bar: '' }, action) => {
                 switch (action.type) {
