@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.2.0"></a>
+# [0.2.0](https://github.com/bigcommerce/data-store-js/compare/v0.1.8...v0.2.0) (2018-08-07)
+
+
+### Bug Fixes
+
+* **core:** CHECKOUT-3011 Don't trigger subscribers if only transformed state changes ([f99d186](https://github.com/bigcommerce/data-store-js/commit/f99d186))
+
+
+### Features
+
+* **core:** CHECKOUT-3011 Skip initial subscriber notification ([2869178](https://github.com/bigcommerce/data-store-js/commit/2869178))
+
+
+
 <a name="0.1.8"></a>
 ## [0.1.8](https://github.com/bigcommerce/data-store-js/compare/v0.1.7...v0.1.8) (2018-05-27)
 
