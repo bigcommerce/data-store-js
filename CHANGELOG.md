@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.2.2"></a>
+## [0.2.2](https://github.com/bigcommerce/data-store-js/compare/v0.2.1...v0.2.2) (2018-08-23)
+
+
+### Bug Fixes
+
+* **common:** CHECKOUT-3462 Remove Node engine field ([3c034ce](https://github.com/bigcommerce/data-store-js/commit/3c034ce))
+
+
+
 <a name="0.2.1"></a>
 ## [0.2.1](https://github.com/bigcommerce/data-store-js/compare/v0.2.0...v0.2.1) (2018-08-07)
 
