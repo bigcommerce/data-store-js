@@ -179,6 +179,32 @@ describe('DataStore', () => {
             ]);
         });
 
+        it('execute thunk actions sequentially', async () => {
+            const initialState = { count: 0 };
+            const store = new DataStore((state = initialState, action) => {
+                if (action.type === 'UPDATE') {
+                    return { ...state, count: action.payload };
+                }
+
+                return state;
+            }, initialState);
+
+            const thunk = (readableStore: ReadableDataStore<{ count: number }>) => {
+                const { count } = readableStore.getState();
+
+                return Observable.of({ type: 'UPDATE', payload: count + 1 })
+                    .delay(10);
+            };
+
+            await Promise.all([
+                store.dispatch(thunk),
+                store.dispatch(thunk),
+                store.dispatch(thunk),
+            ]);
+
+            expect(store.getState()).toEqual({ count: 3 });
+        });
+
         it('resolves promises sequentially', async () => {
             const store = new DataStore((state = {}) => state);
             const callback = jest.fn();

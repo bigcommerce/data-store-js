@@ -1,4 +1,5 @@
 import { isEqual, merge } from 'lodash';
+import { defer } from 'rxjs/observable/defer';
 import { from } from 'rxjs/observable/from';
 import { of } from 'rxjs/observable/of';
 import { _throw } from 'rxjs/observable/throw';
@@ -202,7 +203,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         thunkAction: ThunkAction<TDispatchAction, TTransformedState>,
         options: DispatchOptions = {}
     ): Promise<TTransformedState> {
-        return this._dispatchObservableAction(thunkAction(this), options);
+        return this._dispatchObservableAction(defer(() => thunkAction(this)), options);
     }
 
     private _getDispatcher(queueId: string = 'default'): Dispatcher<TAction> {
