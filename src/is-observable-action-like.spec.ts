@@ -1,11 +1,11 @@
-import { Observable } from 'rxjs';
+import { of } from 'rxjs';
 
 import createAction from './create-action';
 import isObservableActionLike from './is-observable-action-like';
 
 describe('isObservableActionLike()', () => {
     it('returns true if observable action', () => {
-        expect(isObservableActionLike(Observable.of(createAction('FOOBAR'))))
+        expect(isObservableActionLike(of(createAction('FOOBAR'))))
             .toEqual(true);
     });
 

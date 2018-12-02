@@ -1,5 +1,6 @@
 import { noop } from 'lodash';
-import { Observable, Observer } from 'rxjs';
+import { from, of, throwError, Observable, Observer } from 'rxjs';
+import { catchError, delay, map } from 'rxjs/operators';
 
 import Action from './action';
 import DataStore from './data-store';
@@ -23,7 +24,7 @@ describe('DataStore', () => {
             const state = {};
             const reducer = jest.fn(() => state);
             const store = new DataStore(reducer, state);
-            const action = Observable.from([
+            const action = from([
                 { type: 'ACTION' },
                 { type: 'ACTION_2' },
             ]);
@@ -46,7 +47,7 @@ describe('DataStore', () => {
         });
 
         it('dispatches thunk actions', async () => {
-            const thunk: ThunkAction = readableStore => Observable.of({
+            const thunk: ThunkAction = readableStore => of({
                 payload: `${readableStore.getState().message}!!!`,
                 type: 'UPDATE',
             });
@@ -72,7 +73,7 @@ describe('DataStore', () => {
                 return state;
             }, { message: '' });
 
-            expect(await store.dispatch(Observable.of(
+            expect(await store.dispatch(of(
                 { type: 'APPEND', payload: 'foo' },
                 { type: 'APPEND', payload: 'bar' },
                 { type: 'APPEND', payload: '!!!' }
@@ -84,7 +85,7 @@ describe('DataStore', () => {
             const action = { type: 'APPEND_ERROR', payload: new Error('Unknown error') };
 
             try {
-                await store.dispatch(Observable.throw(action));
+                await store.dispatch(throwError(action));
             } catch (error) {
                 expect(error).toEqual(action.payload);
             }
@@ -112,10 +113,10 @@ describe('DataStore', () => {
             reducer.mockClear();
 
             await Promise.all([
-                store.dispatch(Observable.of({ type: 'ACTION' }).delay(10)),
-                store.dispatch(Observable.of({ type: 'ACTION_2' })),
-                store.dispatch(Observable.throw({ type: 'ACTION_3', error: true })).catch(noop),
-                store.dispatch(Observable.of({ type: 'ACTION_4' })),
+                store.dispatch(of({ type: 'ACTION' }).pipe(delay(10))),
+                store.dispatch(of({ type: 'ACTION_2' })),
+                store.dispatch(throwError({ type: 'ACTION_3', error: true })).catch(noop),
+                store.dispatch(of({ type: 'ACTION_4' })),
             ]);
 
             expect(reducer.mock.calls).toEqual([
@@ -133,12 +134,12 @@ describe('DataStore', () => {
             reducer.mockClear();
 
             await Promise.all([
-                store.dispatch(Observable.of({ type: 'ACTION' }).delay(10)),
-                store.dispatch(Observable.of({ type: 'ACTION_2' })),
-                store.dispatch(Observable.throw({ type: 'ACTION_3', error: true })).catch(noop),
-                store.dispatch(Observable.of({ type: 'FOOBAR_ACTION' }).delay(5), { queueId: 'foobar' }),
-                store.dispatch(Observable.of({ type: 'FOOBAR_ACTION_2' }), { queueId: 'foobar' }),
-                store.dispatch(Observable.of({ type: 'ACTION_4' })),
+                store.dispatch(of({ type: 'ACTION' }).pipe(delay(10))),
+                store.dispatch(of({ type: 'ACTION_2' })),
+                store.dispatch(throwError({ type: 'ACTION_3', error: true })).catch(noop),
+                store.dispatch(of({ type: 'FOOBAR_ACTION' }).pipe(delay(5)), { queueId: 'foobar' }),
+                store.dispatch(of({ type: 'FOOBAR_ACTION_2' }), { queueId: 'foobar' }),
+                store.dispatch(of({ type: 'ACTION_4' })),
             ]);
 
             expect(reducer.mock.calls).toEqual([
@@ -160,13 +161,13 @@ describe('DataStore', () => {
             await Promise.all([
                 store.dispatch(
                     (readableStore: ReadableDataStore<{ message: string }>) =>
-                        Observable.of({ type: 'ACTION', payload: store.getState().message }).delay(10)
+                        of({ type: 'ACTION', payload: store.getState().message }).pipe(delay(10))
                 ),
-                store.dispatch(() => Observable.of({ type: 'ACTION_2' })),
-                store.dispatch(() => Observable.throw({ type: 'ACTION_3', error: true })).catch(noop),
-                store.dispatch(() => Observable.of({ type: 'FOOBAR_ACTION' }).delay(5), { queueId: 'foobar' }),
-                store.dispatch(() => Observable.of({ type: 'FOOBAR_ACTION_2' }), { queueId: 'foobar' }),
-                store.dispatch(() => Observable.of({ type: 'ACTION_4' })),
+                store.dispatch(() => of({ type: 'ACTION_2' })),
+                store.dispatch(() => throwError({ type: 'ACTION_3', error: true })).catch(noop),
+                store.dispatch(() => of({ type: 'FOOBAR_ACTION' }).pipe(delay(5)), { queueId: 'foobar' }),
+                store.dispatch(() => of({ type: 'FOOBAR_ACTION_2' }), { queueId: 'foobar' }),
+                store.dispatch(() => of({ type: 'ACTION_4' })),
             ]);
 
             expect(reducer.mock.calls).toEqual([
@@ -192,8 +193,8 @@ describe('DataStore', () => {
             const thunk = (readableStore: ReadableDataStore<{ count: number }>) => {
                 const { count } = readableStore.getState();
 
-                return Observable.of({ type: 'UPDATE', payload: count + 1 })
-                    .delay(10);
+                return of({ type: 'UPDATE', payload: count + 1 })
+                    .pipe(delay(10));
             };
 
             await Promise.all([
@@ -210,17 +211,17 @@ describe('DataStore', () => {
             const callback = jest.fn();
 
             await Promise.all([
-                store.dispatch(Observable.of({ type: 'ACTION' }).delay(10))
+                store.dispatch(of({ type: 'ACTION' }).pipe(delay(10)))
                     .then(() => callback('ACTION')),
-                store.dispatch(Observable.of({ type: 'ACTION_2' }))
+                store.dispatch(of({ type: 'ACTION_2' }))
                     .then(() => callback('ACTION_2')),
-                store.dispatch(Observable.throw({ type: 'ACTION_3', error: true }))
+                store.dispatch(throwError({ type: 'ACTION_3', error: true }))
                     .catch(() => callback('ACTION_3')),
-                store.dispatch(Observable.of({ type: 'FOOBAR_ACTION' }).delay(5), { queueId: 'foobar' })
+                store.dispatch(of({ type: 'FOOBAR_ACTION' }).pipe(delay(5)), { queueId: 'foobar' })
                     .then(() => callback('FOOBAR_ACTION')),
-                store.dispatch(Observable.of({ type: 'FOOBAR_ACTION_2' }), { queueId: 'foobar' })
+                store.dispatch(of({ type: 'FOOBAR_ACTION_2' }), { queueId: 'foobar' })
                     .then(() => callback('FOOBAR_ACTION_2')),
-                store.dispatch(Observable.of({ type: 'ACTION_4' }))
+                store.dispatch(of({ type: 'ACTION_4' }))
                     .then(() => callback('ACTION_4')),
             ]);
 
@@ -250,14 +251,14 @@ describe('DataStore', () => {
             const store = new DataStore(reducer);
 
             reducer.mockClear();
-            store.dispatch(Observable.of({ type: '', payload: 'foo' }, { type: '', payload: 'bar' }));
+            store.dispatch(of({ type: '', payload: 'foo' }, { type: '', payload: 'bar' }));
 
             expect(reducer).not.toHaveBeenCalled();
         });
 
         it('dispatches actions with transformer applied', () => {
             const actionTransformer = jest.fn((action$: Observable<Action>) =>
-                action$.map(action => ({ ...action, payload: 'foo' }))
+                action$.pipe(map(action => ({ ...action, payload: 'foo' })))
             );
             const reducer = jest.fn(state => state);
             const store = new DataStore(reducer, {}, { actionTransformer });
@@ -270,9 +271,9 @@ describe('DataStore', () => {
 
         it('dispatches failed actions with transformer applied', async () => {
             const actionTransformer = jest.fn((action$: Observable<Action>) =>
-                action$.catch(action => {
+                action$.pipe(catchError(action => {
                     throw { ...action, payload: 'foo' };
-                })
+                }))
             );
             const reducer = jest.fn(state => state);
             const store = new DataStore(reducer, {}, { actionTransformer });
@@ -473,10 +474,10 @@ describe('DataStore', () => {
 
             await Promise.all([
                 store.dispatch(
-                    Observable.from([{ type: 'APPEND', payload: 'foo' }, { type: 'APPEND', payload: 'bar' }]).delay(10)
+                    from([{ type: 'APPEND', payload: 'foo' }, { type: 'APPEND', payload: 'bar' }]).pipe(delay(10))
                 ),
                 store.dispatch(
-                    Observable.from([{ type: 'APPEND', payload: '!!!' }]).delay(1)
+                    from([{ type: 'APPEND', payload: '!!!' }]).pipe(delay(1))
                 ),
             ]);
 
@@ -503,16 +504,16 @@ describe('DataStore', () => {
 
             await Promise.all([
                 store.dispatch(
-                    Observable.from([{ type: 'APPEND', payload: 'foo' }, { type: 'APPEND', payload: 'bar' }]).delay(10)
+                    from([{ type: 'APPEND', payload: 'foo' }, { type: 'APPEND', payload: 'bar' }]).pipe(delay(10))
                 ),
                 store.dispatch(
-                    Observable.from([{ type: 'APPEND', payload: '!!!' }]).delay(5)
+                    from([{ type: 'APPEND', payload: '!!!' }]).pipe(delay(5))
                 ),
                 store.dispatch(
-                    Observable.from([{ type: 'APPEND', payload: 'Hey' }]).delay(1), { queueId: 'greeting' }
+                    from([{ type: 'APPEND', payload: 'Hey' }]).pipe(delay(1)), { queueId: 'greeting' }
                 ),
                 store.dispatch(
-                    Observable.from([{ type: 'APPEND', payload: ', ' }]), { queueId: 'greeting' }
+                    from([{ type: 'APPEND', payload: ', ' }]), { queueId: 'greeting' }
                 ),
             ]);
 
@@ -568,10 +569,10 @@ describe('DataStore', () => {
             store.subscribe(subscriber);
             expect.assertions(3);
 
-            await store.dispatch(Observable.of({ type: 'DECREMENT' }))
+            await store.dispatch(of({ type: 'DECREMENT' }))
                 .catch((error: any) => expect(error).toBeInstanceOf(Error));
 
-            await store.dispatch(Observable.of({ type: 'INCREMENT' }));
+            await store.dispatch(of({ type: 'INCREMENT' }));
 
             expect(subscriber).toHaveBeenCalledTimes(2);
             expect(subscriber).toHaveBeenLastCalledWith({ count: 2 });
@@ -607,10 +608,10 @@ describe('DataStore', () => {
             store.subscribe(subscriber);
             expect.assertions(3);
 
-            await store.dispatch(Observable.of({ type: 'INCREMENT' }))
+            await store.dispatch(of({ type: 'INCREMENT' }))
                 .catch((error: any) => expect(error).toBeInstanceOf(Error));
 
-            await store.dispatch(Observable.of({ type: 'DECREMENT' }));
+            await store.dispatch(of({ type: 'DECREMENT' }));
 
             expect(subscriber).toHaveBeenCalledTimes(2);
             expect(subscriber).toHaveBeenCalledWith({ count: 0 });

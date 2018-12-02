@@ -1,4 +1,4 @@
-import { SubscribableOrPromise } from 'rxjs/Observable';
+import { SubscribableOrPromise } from 'rxjs';
 
 import ReadableDataStore from './readable-data-store';
 

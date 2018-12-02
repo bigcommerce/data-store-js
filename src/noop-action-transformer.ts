@@ -1,4 +1,4 @@
-import { Subscribable } from 'rxjs/Observable';
+import { Subscribable } from 'rxjs';
 
 import Action from './action';
 
