@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.2.5"></a>
+## [0.2.5](https://github.com/bigcommerce/data-store-js/compare/v0.2.4...v0.2.5) (2018-12-03)
+
+
+### Bug Fixes
+
+* **core:** CHECKOUT-3135 Upgrade Rx to version 6 to bring in various performance improvements and features ([6849133](https://github.com/bigcommerce/data-store-js/commit/6849133))
+
+
+
 <a name="0.2.4"></a>
 ## [0.2.4](https://github.com/bigcommerce/data-store-js/compare/v0.2.3...v0.2.4) (2018-11-15)
 
