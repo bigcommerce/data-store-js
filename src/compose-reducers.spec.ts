@@ -44,6 +44,17 @@ describe('composeReducers()', () => {
         expect(reducer(initialState, { type: 'APPEND' })).toEqual('foobar');
     });
 
+    it('composes reducers that handle different input type', () => {
+        const reducer = composeReducers(
+            barReducer,
+            fooReducer,
+            (state: string | number, action) => typeof state === 'string' ? state : `${state}`
+        );
+        const initialState = 123;
+
+        expect(reducer(initialState, { type: 'APPEND' })).toEqual('123foobar');
+    });
+
     it('returns new instance only if different in value', () => {
         const reducer = composeReducers(
             (state, action) => action.type === 'UPDATE' ? { name: action.payload } : { ...state },
