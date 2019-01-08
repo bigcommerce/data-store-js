@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.2.6"></a>
+## [0.2.6](https://github.com/bigcommerce/data-store-js/compare/v0.2.5...v0.2.6) (2019-01-08)
+
+
+### Bug Fixes
+
+* **core:** CHECKOUT-3790 Allow `composeReducers` function to accept reducers of different type ([d66d0f4](https://github.com/bigcommerce/data-store-js/commit/d66d0f4))
+* **core:** CHECKOUT-3790 Ensure reducers have the expected signature before composing them ([8b7f3a9](https://github.com/bigcommerce/data-store-js/commit/8b7f3a9))
+
+
+
 <a name="0.2.5"></a>
 ## [0.2.5](https://github.com/bigcommerce/data-store-js/compare/v0.2.4...v0.2.5) (2018-12-03)
 
