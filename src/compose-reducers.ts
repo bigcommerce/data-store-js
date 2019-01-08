@@ -34,7 +34,9 @@ export default function composeReducers<TState, TAction extends Action = Action>
 ): Reducer<TState, TAction> {
     return (state, action) => {
         const newState = flowRight(
-            reducers.map(reducer => curryRight(reducer)(action))
+            reducers
+                .filter(reducer => reducer.length === 2)
+                .map(reducer => curryRight(reducer)(action))
         )(state);
 
         return isEqual(state, newState) ? state : newState;
