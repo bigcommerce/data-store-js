@@ -34,14 +34,14 @@ import { createDataStore } from '@bigcommerce/data-store';
 
 const reducer = (state, action) => {
     switch (action.type) {
-        case 'INCREMENT':
-            return { ...state, count: state.count + 1 };
+    case 'INCREMENT':
+        return { ...state, count: state.count + 1 };
 
-        case 'UPDATE_COUNT':
-            return { ...state, count: action.payload };
+    case 'UPDATE_COUNT':
+        return { ...state, count: action.payload };
 
-        default:
-            return state;
+    default:
+        return state;
     }
 };
 
