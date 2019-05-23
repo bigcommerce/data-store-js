@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.2.7"></a>
+## [0.2.7](https://github.com/bigcommerce/data-store-js/compare/v0.2.6...v0.2.7) (2019-05-23)
+
+
+### Bug Fixes
+
+* **core:** CHECKOUT-4137 Catch error if unable to freeze or perform check ([a4d9ea6](https://github.com/bigcommerce/data-store-js/commit/a4d9ea6))
+
+
+
 <a name="0.2.6"></a>
 ## [0.2.6](https://github.com/bigcommerce/data-store-js/compare/v0.2.5...v0.2.6) (2019-01-08)
 
