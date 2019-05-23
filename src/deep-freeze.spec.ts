@@ -51,4 +51,15 @@ describe('deepFreeze()', () => {
 
         expect(deepFreeze(object)).toBe(object);
     });
+
+    it('catches type error when trying to freeze unsupported values', () => {
+        jest.spyOn(Object, 'freeze')
+            .mockImplementationOnce(() => {
+                throw TypeError();
+            });
+
+        const value = ['Foobar'];
+
+        expect(() => deepFreeze(value)).not.toThrowError();
+    });
 });
