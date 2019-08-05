@@ -4,15 +4,18 @@ import Action from './action';
 import Reducer from './reducer';
 
 export default function combineReducers<TState, TAction extends Action = Action>(
-    reducers: ReducerMap<TState, TAction>
+    reducers: ReducerMap<TState, TAction>,
+    options?: CombineReducersOptions
 ): Reducer<TState, TAction> {
+    const { equalityCheck = isEqual } = options || {};
+
     return (state, action) =>
         Object.keys(reducers).reduce((result, key) => {
             const reducer = reducers[key as keyof TState];
             const currentState = state ? state[key as keyof TState] : undefined;
             const newState = reducer(currentState, action);
 
-            if (isEqual(currentState, newState) && result) {
+            if (equalityCheck(currentState, newState) && result) {
                 return result;
             }
 
@@ -23,3 +26,7 @@ export default function combineReducers<TState, TAction extends Action = Action>
 export type ReducerMap<TState, TAction extends Action = Action> = {
     [Key in keyof TState]: Reducer<TState[Key], TAction>;
 };
+
+export interface CombineReducersOptions {
+    equalityCheck?(valueA: any, valueB: any): boolean;
+}
