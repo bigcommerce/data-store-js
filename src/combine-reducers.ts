@@ -1,4 +1,5 @@
-import { assign, isEqual } from 'lodash';
+import { assign } from 'lodash';
+import * as shallowEqual from 'shallowequal';
 
 import Action from './action';
 import Reducer from './reducer';
@@ -7,7 +8,7 @@ export default function combineReducers<TState, TAction extends Action = Action>
     reducers: ReducerMap<TState, TAction>,
     options?: CombineReducersOptions
 ): Reducer<TState, TAction> {
-    const { equalityCheck = isEqual } = options || {};
+    const { equalityCheck = shallowEqual } = options || {};
 
     return (state, action) =>
         Object.keys(reducers).reduce((result, key) => {

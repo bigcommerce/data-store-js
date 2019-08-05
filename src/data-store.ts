@@ -1,4 +1,4 @@
-import { isEqual, merge } from 'lodash';
+import { merge } from 'lodash';
 import {
     defer,
     from,
@@ -22,6 +22,7 @@ import {
     skip,
     tap,
 } from 'rxjs/operators';
+import * as shallowEqual from 'shallowequal';
 
 import Action from './action';
 import deepFreeze from './deep-freeze';
@@ -51,7 +52,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         this._reducer = reducer;
         this._options = {
             actionTransformer: noopActionTransformer,
-            equalityCheck: isEqual,
+            equalityCheck: shallowEqual,
             shouldWarnMutation: true,
             stateTransformer: noopStateTransformer,
             ...options,

@@ -1,4 +1,5 @@
-import { curryRight, flowRight, isEqual } from 'lodash';
+import { curryRight, flowRight } from 'lodash';
+import * as shallowEqual from 'shallowequal';
 
 import Action from './action';
 import Reducer from './reducer';
@@ -44,7 +45,7 @@ export default function composeReducers<TState, TAction extends Action = Action>
         options = { ...options, ...args[args.length - 1] };
     }
 
-    const { equalityCheck = isEqual } = options;
+    const { equalityCheck = shallowEqual } = options;
 
     return (state, action) => {
         const newState = flowRight(
