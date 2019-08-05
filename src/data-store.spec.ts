@@ -1,4 +1,4 @@
-import { noop } from 'lodash';
+import { isEqual, noop } from 'lodash';
 import { from, of, throwError, Observable, Observer } from 'rxjs';
 import { catchError, delay, map } from 'rxjs/operators';
 
@@ -317,15 +317,43 @@ describe('DataStore', () => {
             expect(subscriber.mock.calls.length).toEqual(1);
         });
 
-        it('does not notify subscribers if current state has changed in reference but not value', () => {
-            const store = new DataStore((state = { foobar: '' }) => ({ ...state }),
-                { foobar: 'foobar' }
+        it('does not notify subscribers if current state has shallowly changed in reference but not in value', () => {
+            const store = new DataStore(
+                (state = { data: { foobar: '' } }, action) => (
+                    action.type === 'SHALLOW' ? { ...state } : { ...state, data: { ...state.data } }
+                ),
+                { data: { foobar: 'foobar' } }
             );
 
             const subscriber = jest.fn();
 
             store.subscribe(subscriber);
-            store.dispatch({ type: 'ACTION' });
+            store.dispatch({ type: 'SHALLOW' });
+
+            expect(subscriber.mock.calls.length).toEqual(1);
+
+            store.dispatch({ type: 'DEEP' });
+
+            expect(subscriber.mock.calls.length).toEqual(2);
+        });
+
+        it('can be configured to notify subscribers if current state has deeply changed in reference', () => {
+            const store = new DataStore(
+                (state = { data: { foobar: '' } }, action) => (
+                    action.type === 'SHALLOW' ? { ...state } : { ...state, data: { ...state.data } }
+                ),
+                { data: { foobar: 'foobar' } },
+                { equalityCheck: isEqual }
+            );
+
+            const subscriber = jest.fn();
+
+            store.subscribe(subscriber);
+            store.dispatch({ type: 'SHALLOW' });
+
+            expect(subscriber.mock.calls.length).toEqual(1);
+
+            store.dispatch({ type: 'DEEP' });
 
             expect(subscriber.mock.calls.length).toEqual(1);
         });

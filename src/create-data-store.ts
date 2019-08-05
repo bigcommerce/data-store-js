@@ -12,5 +12,9 @@ export default function createDataStore<TState, TAction extends Action = Action,
         return new DataStore(reducer, initialState, options);
     }
 
-    return new DataStore(combineReducers(reducer), initialState, options);
+    return new DataStore(
+        combineReducers(reducer, { equalityCheck: options && options.equalityCheck }),
+        initialState,
+        options
+    );
 }

@@ -1,4 +1,4 @@
-import { isEqual, merge } from 'lodash';
+import { merge } from 'lodash';
 import {
     defer,
     from,
@@ -22,6 +22,7 @@ import {
     skip,
     tap,
 } from 'rxjs/operators';
+import * as shallowEqual from 'shallowequal';
 
 import Action from './action';
 import deepFreeze from './deep-freeze';
@@ -51,6 +52,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         this._reducer = reducer;
         this._options = {
             actionTransformer: noopActionTransformer,
+            equalityCheck: shallowEqual,
             shouldWarnMutation: true,
             stateTransformer: noopStateTransformer,
             ...options,
@@ -73,7 +75,9 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
                         transformedState: this._state$.getValue(),
                     }
                 ),
-                distinctUntilChanged(({ state: stateA }, { state: stateB }) => isEqual(stateA, stateB)),
+                distinctUntilChanged(({ state: stateA }, { state: stateB }) =>
+                    this._options.equalityCheck(stateA, stateB)
+                ),
                 map(({ transformedState }) => transformedState)
             )
             .subscribe(this._state$);
@@ -115,7 +119,9 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         if (filters.length > 0) {
             state$ = state$.pipe(
                 distinctUntilChanged((stateA, stateB) =>
-                    filters.every(filterFn => isEqual(filterFn(stateA), filterFn(stateB)))
+                    filters.every(filterFn =>
+                        this._options.equalityCheck(filterFn(stateA), filterFn(stateB))
+                    )
                 )
             );
         }
@@ -232,6 +238,7 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
 export interface DataStoreOptions<TState, TAction, TTransformedState> {
     shouldWarnMutation: boolean;
     actionTransformer(action: Subscribable<TAction>): Subscribable<TAction>;
+    equalityCheck(valueA: any, valueB: any): boolean;
     stateTransformer(state: TState): TTransformedState;
 }
 
