@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/bigcommerce/data-store-js/compare/v0.2.7...v1.0.0) (2019-08-05)
+
+
+### Features
+
+* **core:** CHECKOUT-4272 Add ability to pass custom equality check function ([d574f1a](https://github.com/bigcommerce/data-store-js/commit/d574f1a))
+
+
+### Performance Improvements
+
+* **core:** CHECKOUT-4272 Switch to do shallow comparison by default ([953ee15](https://github.com/bigcommerce/data-store-js/commit/953ee15))
+
+
+### BREAKING CHANGES
+
+* **core:** This commit changes the way we detect changes between
+the previous and the new state. Previously, we do a deep equality check
+between the two by default. With this change, we do a shallow equality
+check instead. This means that subscribers will get notified if any of
+the immediate members of the previous state is different to the new.
+This behaviour can be changed by configuring `equalityCheck` option when
+creating the `DataStore` instance.
+
+
+
 <a name="0.2.7"></a>
 ## [0.2.7](https://github.com/bigcommerce/data-store-js/compare/v0.2.6...v0.2.7) (2019-05-23)
 
