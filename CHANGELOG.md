@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.0.1"></a>
+## [1.0.1](https://github.com/bigcommerce/data-store-js/compare/v1.0.0...v1.0.1) (2019-08-07)
+
+
+### Bug Fixes
+
+* **core:** CHECKOUT-4272 Only create new frozen objects if they are different from previous frozen objects ([1911834](https://github.com/bigcommerce/data-store-js/commit/1911834))
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/bigcommerce/data-store-js/compare/v0.2.7...v1.0.0) (2019-08-05)
 
