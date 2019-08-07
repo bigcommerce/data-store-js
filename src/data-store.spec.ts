@@ -319,10 +319,12 @@ describe('DataStore', () => {
 
         it('does not notify subscribers if current state has shallowly changed in reference but not in value', () => {
             const store = new DataStore(
-                (state = { data: { foobar: '' } }, action) => (
-                    action.type === 'SHALLOW' ? { ...state } : { ...state, data: { ...state.data } }
+                (state = { data: { foobar: '', message: '' } }, action) => (
+                    action.type === 'SHALLOW' ?
+                        { ...state } :
+                        { ...state, data: { ...state.data, message: action.payload } }
                 ),
-                { data: { foobar: 'foobar' } }
+                { data: { foobar: 'foobar', message: '' } }
             );
 
             const subscriber = jest.fn();
@@ -332,7 +334,7 @@ describe('DataStore', () => {
 
             expect(subscriber.mock.calls.length).toEqual(1);
 
-            store.dispatch({ type: 'DEEP' });
+            store.dispatch({ type: 'DEEP', payload: 'Hello world' });
 
             expect(subscriber.mock.calls.length).toEqual(2);
         });

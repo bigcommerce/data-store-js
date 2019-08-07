@@ -143,10 +143,13 @@ export default class DataStore<TState, TAction extends Action = Action, TTransfo
         action: TAction
     ): StateTuple<TState, TTransformedState> {
         try {
-            const newState = this._reducer(states.state, action);
-            const transformedState = this._options.shouldWarnMutation === false ?
-                this._options.stateTransformer(newState) :
-                this._options.stateTransformer(deepFreeze(newState));
+            const newState = this._options.shouldWarnMutation === false ?
+                this._reducer(states.state, action) :
+                deepFreeze(this._reducer(states.state, action), {
+                    equalityCheck: this._options.equalityCheck,
+                    previousValue: states.state,
+                });
+            const transformedState = this._options.stateTransformer(newState);
 
             return { state: newState, transformedState };
         } catch (error) {

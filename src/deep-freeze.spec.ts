@@ -52,6 +52,13 @@ describe('deepFreeze()', () => {
         expect(deepFreeze(object)).toBe(object);
     });
 
+    it('does not return new object if previous object is equal to new', () => {
+        const newValue = { message: 'Foobar' };
+        const previousValue = deepFreeze({ message: 'Foobar' });
+
+        expect(deepFreeze(newValue, { previousValue })).toBe(previousValue);
+    });
+
     it('catches type error when trying to freeze unsupported values', () => {
         jest.spyOn(Object, 'freeze')
             .mockImplementationOnce(() => {
