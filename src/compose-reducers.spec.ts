@@ -65,4 +65,45 @@ describe('composeReducers()', () => {
         expect(reducer(initialState, { type: 'NOOP' })).toBe(initialState);
         expect(reducer(initialState, { type: 'UPDATE', payload: 'Hello' })).not.toBe(initialState);
     });
+
+    it('composes multiple reducers without argument length', () => {
+        const fooReducerWithArgs = (...args: any[]) => {
+            const state = args[0];
+            const action = args[1];
+
+            switch (action.type) {
+            case 'FOO':
+                return 'foo';
+
+            case 'APPEND':
+                return `${state}foo`;
+
+            default:
+                return state;
+            }
+        };
+
+        const barReducerWithArgs = (...args: any[]) => {
+            const state = args[0];
+            const action = args[1];
+
+            switch (action.type) {
+            case 'BAR':
+                return 'bar';
+
+            case 'APPEND':
+                return `${state}bar`;
+
+            default:
+                return state;
+            }
+        };
+
+        const reducer = composeReducers(barReducerWithArgs, fooReducerWithArgs);
+        const initialState = '';
+
+        expect(reducer(initialState, { type: 'FOO' })).toEqual('foo');
+        expect(reducer(initialState, { type: 'BAR' })).toEqual('bar');
+        expect(reducer(initialState, { type: 'HELLO' })).toEqual('');
+    });
 });
