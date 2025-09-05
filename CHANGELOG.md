@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.3](https://github.com/bigcommerce/data-store-js/compare/v1.0.2...v1.0.3) (2025-09-05)
+
+
+### Bug Fixes
+
+* **core:** CHECKOUT-9450 Fix issue with ES6 as functions with default arguments no longer return length ([9845617](https://github.com/bigcommerce/data-store-js/commit/98456176d4bc03f5222e37fde8af95a9daae1675))
+
 ### [1.0.2](https://github.com/bigcommerce/data-store-js/compare/v1.0.1...v1.0.2) (2024-01-23)
 
 <a name="1.0.1"></a>
