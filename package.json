@@ -21,7 +21,7 @@
     "prebuild": "rm -rf lib",
     "build": "tsc --outDir lib --project tsconfig-build.json",
     "lint": "tslint 'src/**/*.ts' --config tslint.json --project tsconfig.json && tsc --noEmit",
-    "prepare": "check-node-version --node '>=18' --npm '>=9' && npm run build",
+    "prepare": "check-node-version --node '>=20' --npm '>=10' && npm run build",
     "prerelease": "git fetch --tags && npm run validate-commits && npm run lint && npm test",
     "release": "standard-version",
     "postrelease": "npm publish --access public && git push --follow-tags",

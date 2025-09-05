@@ -8,7 +8,7 @@ jobs:
   build:
     executor:
       name: node/node
-      node-version: '18.19'
+      node-version: '20.19'
     steps:
       - ci/pre-setup
       - ci/merge-base
